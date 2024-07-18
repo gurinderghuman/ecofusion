@@ -13,8 +13,10 @@ spec:
       labels:
         app: ecofusion
     spec:
+      serviceAccountName: ecofusion-gsa@eminent-yen-429707-d4.iam.gserviceaccount.com # This should be the Kubernetes service account name
       containers:
       - name: ecofusion
-        image: gcr.io/eminent-yen-429707-d4/ecofusion@sha256:476b73daf8d8ea2e0f614d747c9b3a3b5aeeadcce7b67c3b440abdd7eb02cf20
+        image: gcr.io/eminent-yen-429707-d4/ecofusion:latest  # Change this to use a tag instead of SHA256
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
