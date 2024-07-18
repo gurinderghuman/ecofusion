@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 # Copy application dependency manifests to the container image.
 COPY package*.json ./
 
-# Install dependencies.
+# Install dependencies.cd
 RUN npm install
 
 # Copy local code to the container image.
