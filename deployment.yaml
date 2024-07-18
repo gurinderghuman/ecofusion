@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecofusion-deployment
+  namespace: ecofusion-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ecofusion
+  template:
+    metadata:
+      labels:
+        app: ecofusion
+    spec:
+      containers:
+      - name: ecofusion
+        image: gcr.io/eminent-yen-429707-d4/ecofusion@sha256:476b73daf8d8ea2e0f614d747c9b3a3b5aeeadcce7b67c3b440abdd7eb02cf20
+        ports:
+        - containerPort: 3000
