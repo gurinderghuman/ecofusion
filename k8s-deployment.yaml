@@ -1,10 +1,9 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ecofusion
 spec:
-  replicas: 1
+  replicas: 1  # Adjust this based on your needs
   selector:
     matchLabels:
       app: ecofusion

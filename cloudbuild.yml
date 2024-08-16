@@ -11,8 +11,8 @@ steps:
   - run
   - --filename=k8s-deployment.yaml
   - --image=gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
-  - --location=us-central1-a
-  - --cluster= ecofusion
+  - --location=us-central1-a  # Replace with your GKE cluster's region
+  - --cluster=ecofusion  # Replace with your GKE cluster's name
 
 # Use Cloud Logging Only for logs
 options:
