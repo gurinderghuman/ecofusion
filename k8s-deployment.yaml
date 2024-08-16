@@ -13,7 +13,7 @@ spec:
       labels:
         app: ecofusion
     spec:
-      serviceAccountName: ecofusion-ksa
+      serviceAccountName: ecofusion-service-account-name
       containers:
       - name: ecofusion
         image: gcr.io/sample-product-catalog/ecofusion:COMMIT_SHA
