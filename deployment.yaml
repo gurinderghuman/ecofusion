@@ -1,29 +1,21 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nextjs-deployment
-  namespace: ecofusion-namespace
+  name: ecofusion
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: nextjs
+      app: ecofusion
   template:
     metadata:
       labels:
-        app: nextjs
+        app: ecofusion
     spec:
+      serviceAccountName: ecofusion-ksa
       containers:
-      - name: nextjs-container
-        image: gcr.io/eco-fusion-429815/nextjs-app:latest
+      - name: ecofusion
+        image: us-central1-docker.pkg.dev/excellent-nexus-431107-n8/my-repo/ecofusion:v1
         ports:
-        - containerPort: 3000
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "512Mi"
-            cpu: "200m"
-      imagePullSecrets:
-      - name: gcr-json-key
+        - containerPort: 80
