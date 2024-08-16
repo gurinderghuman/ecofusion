@@ -14,5 +14,9 @@ steps:
   - --location=us-central1-a
   - --cluster=nginx-1-cluster
 
+# Use Cloud Logging Only for logs
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 images:
 - gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
