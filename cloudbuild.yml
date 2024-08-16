@@ -12,7 +12,7 @@ steps:
   - --filename=k8s-deployment.yaml
   - --image=gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
   - --location=us-central1-a
-  - --cluster=nginx-1-cluster
+  - --cluster= ecofusion
 
 # Use Cloud Logging Only for logs
 options:
