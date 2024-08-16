@@ -16,6 +16,6 @@ spec:
       serviceAccountName: ecofusion-ksa
       containers:
       - name: ecofusion
-        image: us-central1-docker.pkg.dev/excellent-nexus-431107-n8/my-repo/ecofusion:v1
+        image: gcr.io/sample-product-catalog/ecofusion:COMMIT_SHA
         ports:
         - containerPort: 80

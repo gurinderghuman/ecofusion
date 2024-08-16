@@ -1,0 +1,18 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA', '.']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA']
+# Deploy container image to GKE
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  args:
+  - run
+  - --filename=k8s-deployment.yaml
+  - --image=gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
+  - --location=us-central1-a
+  - --cluster=nginx-1-cluster
+
+images:
+- gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
