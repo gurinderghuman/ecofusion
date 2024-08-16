@@ -6,7 +6,7 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA']
 # Deploy container image to GKE
-- name: 'gcr.io/cloud-builders/gke-deploy'
+- name: 'gcr.io/cloud-builders/ecofusion'
   args:
   - run
   - --filename=k8s-deployment.yaml
