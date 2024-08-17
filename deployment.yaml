@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: apps/v1  # Change this line
 kind: Deployment
 metadata:
   name: ecofusion-website-deployment
@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
       - name: ecofusion-website
-        image: gcr.io/project-ecofusion/my-website:latest  # Make sure this is correct
+        image: gcr.io/project-ecofusion/my-website:latest  # Replace with your image
         ports:
-        - containerPort: 8080  # Adjust if needed
+        - containerPort: 3000  # Adjust if needed
         resources:
           requests:
             cpu: "100m"
@@ -25,6 +25,4 @@ spec:
           limits:
             cpu: "250m"
             memory: "256Mi"
-        imagePullSecrets:
-        - name: ecofusion-registry-secret
-      serviceAccountName: ecofusion-website-sa
+        
