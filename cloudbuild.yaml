@@ -1,0 +1,15 @@
+steps:
+  - name: 'gcr.io/cloudbuild/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-website:latest', '.']
+  - name: 'gcr.io/cloudbuild/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/my-website:latest']
+  - name: 'gcr.io/cloudbuild/kubectl'
+    args: ['apply', '-f', 'deployment.yaml']
+  - name: 'gcr.io/cloudbuild/kubectl'
+    args: ['apply', '-f', 'service.yaml']
+
+images:
+  - 'gcr.io/$PROJECT_ID/my-website:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
