@@ -1,22 +1,12 @@
 steps:
-# Build the container image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA', '.']
-# Push the container image to Container Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA']
-# Deploy container image to GKE
-- name: 'gcr.io/cloud-builders/sample-product-catalogecofusion'
-  args:
-  - run
-  - --filename=k8s-deployment.yaml
-  - --image=gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
-  - --location=us-central1-a  # Replace with your GKE cluster's region
-  - --cluster=ecofusion  # Replace with your GKE cluster's name
+- name: 'gcr.io/cloudbuild/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/sample-product-catalog/my-website-repo/my-website:latest', '.']
+- name: 'gcr.io/cloudbuild/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/sample-product-catalog/my-website-repo/my-website:latest']
+- name: 'gcr.io/cloudbuild/kubectl'
+  args: ['apply', '-f', 'deployment.yaml']
+- name: 'gcr.io/cloudbuild/kubectl'
+  args: ['apply', '-f', 'service.yaml']
+- name: 'gcr.io/cloudbuild/kubectl'
+  args: ['apply', '-f', 'ingress.yaml']
 
-# Use Cloud Logging Only for logs
-options:
-  logging: CLOUD_LOGGING_ONLY
-
-images:
-- gcr.io/sample-product-catalog/ecofusion:$COMMIT_SHA
