@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: apps/v1  # Change this line
 kind: Deployment
 metadata:
   name: ecofusion-website-deployment
