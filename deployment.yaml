@@ -15,6 +15,6 @@ spec:
       serviceAccountName:  ecofusion-service-account-name # Add this line
       containers:
       - name: my-website
-        image: us-central1-docker.pkg.dev/sample-product-catalog/my-website-repo/my-website:v4
+        image: us-central1-docker.pkg.dev/sample-product-catalog/my-website-repo/my-website:v2
         ports:
         - containerPort: 3000
