@@ -15,10 +15,15 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+      - 'KUBECTL_VERSION=1.28'
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Verify current namespace
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['config', 'view', '--minify', '--output', 'jsonpath={..namespace}']
+    env:
+      - 'KUBECTL_VERSION=1.28'
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Update deployment image
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -32,6 +37,8 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+      - 'KUBECTL_VERSION=1.28'
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Apply deployment
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -39,6 +46,8 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+      - 'KUBECTL_VERSION=1.28'
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Apply service
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -46,6 +55,8 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+      - 'KUBECTL_VERSION=1.28'
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
 images:
   - 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
