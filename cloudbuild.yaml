@@ -7,29 +7,37 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA']
 
-  # Update the deployment YAML with the new image
+  # Extract the image name from deployment.yaml
   - name: 'gcr.io/cloud-builders/sed'
     args:
-    - '-i'
-    - 's|gcr.io/$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA|g'
-    - 'deployment.yaml'
+      - '-n'
+      - 's/image: //p'
+      - 'deployment.yaml'
+    output: image_name.txt
+
+  # Update the image name in deployment.yaml
+  - name: 'gcr.io/cloud-builders/sed'
+    args:
+      - '-i'
+      - 's|gcr.io/$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:\$(cat image_name.txt)|g'
+      - 'deployment.yaml'
 
   # Apply the updated deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
     env:
-    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
   # Apply the service (if it exists)
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
     env:
-    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
 images:
-- 'gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
