@@ -1,10 +1,10 @@
-apiVersion: apps/v1  # Change this line
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ecofusion-website-deployment
   namespace: ecofusion-website
 spec:
-  replicas: 3  # Adjust based on your needs
+  replicas: 3
   selector:
     matchLabels:
       app: ecofusion-website
@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
       - name: ecofusion-website
-        image: gcr.io/project-ecofusion/my-website:latest  # Replace with your image
+        image: gcr.io/project-ecofusion/my-website:latest
         ports:
-        - containerPort: 3000  # Adjust if needed
+        - containerPort: 3000
         resources:
           requests:
             cpu: "100m"
@@ -25,4 +25,18 @@ spec:
           limits:
             cpu: "250m"
             memory: "256Mi"
-        
+        env:
+        - name: NODE_ENV
+          value: "production"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
