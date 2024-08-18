@@ -13,7 +13,7 @@ steps:
       - '-n'
       - 's/image: //p'
       - 'deployment.yaml'
-    output: image_name.txt
+      - '> image_name.txt'  # Redirect output to a file
 
   # Update the image name in deployment.yaml
   - name: 'gcr.io/cloud-builders/sed'
