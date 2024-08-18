@@ -5,25 +5,23 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA']
 
-  # Set up kubectl context
+  # Explicitly get GKE credentials
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'ecofusion-cluster'
+      - '--zone=us-central1-a'
+      - '--project=project-ecofusion'
+
+  # Set kubectl context to the correct namespace
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'config'
       - 'set-context'
       - '--current'
       - '--namespace=ecofusion-website'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-      - 'KUBECTL_VERSION=1.28'
-      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
-
-  # Verify current namespace
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['config', 'view', '--minify', '--output', 'jsonpath={..namespace}']
-    env:
-      - 'KUBECTL_VERSION=1.28'
-      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Update deployment image
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -34,29 +32,14 @@ steps:
       - 'ecofusion-website=gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
       - '-n'
       - 'ecofusion-website'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-      - 'KUBECTL_VERSION=1.28'
-      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Apply deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml', '-n', 'ecofusion-website']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-      - 'KUBECTL_VERSION=1.28'
-      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
   # Apply service
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml', '-n', 'ecofusion-website']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-      - 'KUBECTL_VERSION=1.28'
-      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip'
 
 images:
   - 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
