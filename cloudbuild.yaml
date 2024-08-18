@@ -20,17 +20,14 @@ steps:
       - '--client'
     entrypoint: 'kubectl'
 
-  # Get GKE cluster credentials
+  # Get GKE cluster credentials with verbose logging
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-    - 'container'
-    - 'clusters'
-    - 'get-credentials'
-    - 'ecofusion-cluster'
-    - '--zone'
-    - 'us-central1'
-    - '--project'
-    - '$PROJECT_ID'
+    - '-c'
+    - |
+      gcloud config set project $PROJECT_ID
+      gcloud container clusters get-credentials ecofusion-cluster --zone us-central1-a --project $PROJECT_ID --verbosity=debug
 
   # Validate deployment manifest
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -40,7 +37,7 @@ steps:
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
   # Validate service manifest
@@ -62,7 +59,7 @@ steps:
     - 'deployment/my-node-app'
     - 'my-node-app=gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
 images:
