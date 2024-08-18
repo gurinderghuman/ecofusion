@@ -4,14 +4,37 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/my-website:v1'
+      - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
       - '.'
 
   # Push the image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/my-website:v1'
+      - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
+
+  # Print kubectl version (for debugging)
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'version'
+      - '--client'
+    entrypoint: 'kubectl'
+
+  # Get GKE cluster credentials
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+    - 'container'
+    - 'clusters'
+    - 'get-credentials'
+    - 'ecofusion-cluster'
+    - '--zone'
+    - 'us-central1'
+    - '--project'
+    - '$PROJECT_ID'
+
+  # Validate deployment manifest
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '--dry-run=client', '-f', 'deployment.yaml']
 
   # Apply the deployment manifest
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -20,6 +43,10 @@ steps:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
+  # Validate service manifest
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '--dry-run=client', '-f', 'service.yaml']
+
   # Apply the service manifest
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
@@ -27,8 +54,19 @@ steps:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
+  # Update deployment to use the new image
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+    - 'set'
+    - 'image'
+    - 'deployment/my-node-app'
+    - 'my-node-app=gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+
 images:
-  - 'gcr.io/$PROJECT_ID/my-website:v1'
+  - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
