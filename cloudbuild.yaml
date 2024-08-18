@@ -8,13 +8,28 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA']
 
   # Deploy to GKE
-  - name: 'gcr.io/cloud-builders/gke-deploy'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
-    - run
-    - --filename=k8s/
-    - --image=gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA
-    - --location=us-central1-a
-    - --cluster=ecofusion-cluster
+    - 'set'
+    - 'image'
+    - 'deployment/ecofusion-website-deployment'
+    - 'ecofusion-website=gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA'
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+
+  # Apply any changes to the Kubernetes manifests
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'deployment.yaml']
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'service.yaml']
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
 images:
 - 'gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA'
