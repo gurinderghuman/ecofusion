@@ -16,4 +16,4 @@ spec:
       - name: my-node-app
         image: gcr.io/project-ecofusion/my-website:v1
         ports:
-        - containerPort: 8080
+        - containerPort: 3000
