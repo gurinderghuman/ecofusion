@@ -11,8 +11,12 @@ steps:
   - name: 'gcr.io/cloud-builders/sed'
     args:
       - '-i'
-      - 's|gcr.io/$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:${_REPO_NAME}-${_COMMIT_MESSAGE}-${SHORT_SHA}|g'
+      - 's|gcr.io/\$$PROJECT_ID/ecofusion-website:.*|gcr.io/${PROJECT_ID}/ecofusion-website:${_REPO_NAME}-${_COMMIT_MESSAGE}-${SHORT_SHA}|g'
       - 'deployment.yaml'
+
+  # Print the contents of deployment.yaml
+  - name: 'gcr.io/cloud-builders/cat'
+    args: ['deployment.yaml']
 
   # Apply the updated deployment
   - name: 'gcr.io/cloud-builders/kubectl'
