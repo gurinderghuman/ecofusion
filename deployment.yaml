@@ -1,42 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecofusion-website-deployment
-  namespace: ecofusion-website
+  name: my-node-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: ecofusion-website
+      app: my-node-app
   template:
     metadata:
       labels:
-        app: ecofusion-website
+        app: my-node-app
     spec:
       containers:
-      - name: ecofusion-website
-        image: gcr.io/$PROJECT_ID/ecofusion-website:${_REPO_NAME}-${_COMMIT_MESSAGE}-${SHORT_SHA}
+      - name: my-node-app
+        image: gcr.io/project-ecofusion/my-website:v1
         ports:
-        - containerPort: 3000
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
-        env:
-        - name: NODE_ENV
-          value: "production"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 15
-          periodSeconds: 10
+        - containerPort: 8080
