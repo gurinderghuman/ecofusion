@@ -30,8 +30,11 @@ steps:
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
   # Apply the service (if it exists)
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'service.yaml']
+  steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/ecofusion-website:${_REPO_NAME}-${_COMMIT_MESSAGE}-${SHORT_SHA}', '.']
+  # ... other steps ...
+
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
