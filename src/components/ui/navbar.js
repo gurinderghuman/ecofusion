@@ -11,6 +11,7 @@ const Navbar = () => (
         <Link href="/blog" className="text-white">Blog</Link>
         <Link href="/about" className="text-white">About</Link>
         <Link href="/contact" className="text-white">Contact</Link>
+        <button> hi click me</button>
       </div>
     </div>
   </nav>
