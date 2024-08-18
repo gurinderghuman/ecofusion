@@ -1,46 +1,31 @@
 steps:
-  # Set a valid tag and save it in a file
-  - name: 'gcr.io/cloud-builders/bash'
-    id: 'set-tag'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      if [ -n "${_REPO_NAME}" ] && [ -n "${_COMMIT_MESSAGE}" ]; then
-        echo "${_REPO_NAME}-${_COMMIT_MESSAGE}-${SHORT_SHA}" | sed 's/[^a-zA-Z0-9._-]/-/g' > /workspace/image_tag.txt
-      else
-        echo "${SHORT_SHA}" > /workspace/image_tag.txt
-      fi
-      echo "Image tag: $(cat /workspace/image_tag.txt)"
-
-  # Build the Docker image using the generated tag
+  # Set the image tag based on the commit SHA
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
     args: 
-    - 'build'
-    - '-t'
-    - 'gcr.io/$PROJECT_ID/ecofusion-website:$(cat /workspace/image_tag.txt)'
-    - '.'
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/ecofusion-website:${SHORT_SHA}'
+      - '.'
 
-  # Push the image to Container Registry
+  # Push the image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
     args: 
-    - 'push'
-    - 'gcr.io/$PROJECT_ID/ecofusion-website:$(cat /workspace/image_tag.txt)'
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/ecofusion-website:${SHORT_SHA}'
 
-  # Update the image name in deployment.yaml
+  # Update the image name in the Kubernetes deployment manifest
   - name: 'gcr.io/cloud-builders/sed'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      sed -i "s|gcr.io/\\$$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:$(cat /workspace/image_tag.txt)|g" deployment.yaml
+    id: 'update-manifest'
+    args: 
+      - '-i'
+      - 's|gcr.io/$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:${SHORT_SHA}|'
+      - 'deployment.yaml'
 
-  # Print the contents of deployment.yaml
-  - name: 'gcr.io/cloud-builders/cat'
-    args: ['deployment.yaml']
-
-  # Apply the updated deployment
+  # Apply the updated deployment to the Kubernetes cluster
   - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'apply-deployment'
     args: ['apply', '-f', 'deployment.yaml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
@@ -48,16 +33,14 @@ steps:
 
   # Apply the service (if it exists)
   - name: 'gcr.io/cloud-builders/kubectl'
+    id: 'apply-service'
     args: ['apply', '-f', 'service.yaml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
 images:
-  - 'gcr.io/$PROJECT_ID/ecofusion-website:$(cat /workspace/image_tag.txt)'
-
-substitutions:
-  _IMAGE_TAG: ${SHORT_SHA}
+  - 'gcr.io/$PROJECT_ID/ecofusion-website:${SHORT_SHA}'
 
 options:
   logging: CLOUD_LOGGING_ONLY
