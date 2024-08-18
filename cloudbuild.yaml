@@ -30,10 +30,8 @@ steps:
       gcloud container clusters get-credentials ecofusion-cluster \
         --zone us-central1-a \
         --project $PROJECT_ID \
-        --verbosity=debug \
-        $CLOUDSDK_GET_CREDENTIALS_OPTS
-    env:
-      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip --quiet'
+        --internal-ip \
+        --quiet
 
   # Validate deployment manifest
   - name: 'gcr.io/cloud-builders/kubectl'
