@@ -1,21 +1,51 @@
 steps:
+  # Build and push Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA', '.']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA']
+
+  # Set up kubectl context
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'config'
+      - 'set-context'
+      - '--current'
+      - '--namespace=ecofusion-website'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+
+  # Verify current namespace
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['config', 'view', '--minify', '--output', 'jsonpath={..namespace}']
+
+  # Update deployment image
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-website-deployment'
       - 'ecofusion-website=gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
+      - '-n'
+      - 'ecofusion-website'
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+
+  # Apply deployment
   - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'deployment.yaml']
+    args: ['apply', '-f', 'deployment.yaml', '-n', 'ecofusion-website']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+
+  # Apply service
   - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'service.yaml']
+    args: ['apply', '-f', 'service.yaml', '-n', 'ecofusion-website']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
 images:
   - 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
