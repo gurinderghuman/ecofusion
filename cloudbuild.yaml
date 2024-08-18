@@ -17,15 +17,15 @@ steps:
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=your-zone'  # Replace with your zone
-      - 'CLOUDSDK_CONTAINER_CLUSTER=your-cluster'  # Replace with your cluster name
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
   # Apply the service manifest
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
     env:
-      - 'CLOUDSDK_COMPUTE_ZONE=your-zone'  # Replace with your zone
-      - 'CLOUDSDK_CONTAINER_CLUSTER=your-cluster'  # Replace with your cluster name
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
 images:
   - 'gcr.io/$PROJECT_ID/my-website:v1'
