@@ -7,24 +7,21 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA']
 
-  # Deploy to GKE
-  - name: 'gcr.io/cloud-builders/kubectl'
+  # Update the deployment YAML with the new image
+  - name: 'gcr.io/cloud-builders/sed'
     args:
-    - 'set'
-    - 'image'
-    - 'deployment/ecofusion-website-deployment'
-    - 'ecofusion-website=gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA'
-    env:
-    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+    - '-i'
+    - 's|gcr.io/$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA|g'
+    - 'deployment.yaml'
 
-  # Apply any changes to the Kubernetes manifests
+  # Apply the updated deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
     env:
     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
     - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
 
+  # Apply the service (if it exists)
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
     env:
