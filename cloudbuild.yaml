@@ -1,15 +1,24 @@
 steps:
-  - name: 'gcr.io/cloudbuild/docker'
-    args: ['build', '-t', 'gcr.io/project-ecofusion/my-website:latest', '.']
-  - name: 'gcr.io/cloudbuild/docker'
-    args: ['push', 'gcr.io/project-ecofusion/my-website:latest']
-  - name: 'gcr.io/cloudbuild/kubectl'
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA']
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'set'
+      - 'image'
+      - 'deployment/ecofusion-website-deployment'
+      - 'ecofusion-website=gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
-  - name: 'gcr.io/cloudbuild/kubectl'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
 
 images:
-  - 'gcr.io/project-ecofusion/my-website:latest'
+  - 'gcr.io/project-ecofusion/my-website:$COMMIT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY

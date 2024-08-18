@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ecofusion-website
-        image: gcr.io/project-ecofusion/my-website:latest
+        image: gcr.io/project-ecofusion/my-website:latest  # This will be updated by Cloud Build
         ports:
         - containerPort: 3000
         resources:
