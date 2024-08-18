@@ -1,0 +1,34 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/my-website:v1'
+      - '.'
+
+  # Push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/my-website:v1'
+
+  # Apply the deployment manifest
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'deployment.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=your-zone'  # Replace with your zone
+      - 'CLOUDSDK_CONTAINER_CLUSTER=your-cluster'  # Replace with your cluster name
+
+  # Apply the service manifest
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'service.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=your-zone'  # Replace with your zone
+      - 'CLOUDSDK_CONTAINER_CLUSTER=your-cluster'  # Replace with your cluster name
+
+images:
+  - 'gcr.io/$PROJECT_ID/my-website:v1'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
