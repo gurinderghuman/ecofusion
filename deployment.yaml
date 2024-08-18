@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ecofusion-website
-        image: gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA  # Use the short SHA hash
+        image: gcr.io/$PROJECT_ID/ecofusion-website:${_REPO_NAME}-${_COMMIT_MESSAGE}-${SHORT_SHA}  # Use the short SHA hash
         ports:
         - containerPort: 3000
         resources:
