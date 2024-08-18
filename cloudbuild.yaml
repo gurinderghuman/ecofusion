@@ -13,29 +13,27 @@ steps:
       - 'push'
       - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
 
-  # Print kubectl version (for debugging)
+  # Set up kubectl with the correct context
   - name: 'gcr.io/cloud-builders/kubectl'
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
     args:
-      - 'version'
-      - '--client'
-    entrypoint: 'kubectl'
-
-  # Get GKE cluster credentials with additional options
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      gcloud config set project $PROJECT_ID
-      gcloud container clusters get-credentials ecofusion-cluster \
-        --zone us-central1-a \
-        --project $PROJECT_ID \
-        --internal-ip \
-        --quiet
+    - 'config'
+    - 'view'
+    - '--raw'
+    - '--minify'
+    - '--flatten'
+    - '--merge'
+    id: 'kubectl-context'
 
   # Validate deployment manifest
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '--dry-run=client', '-f', 'deployment.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+    waitFor: ['kubectl-context']
 
   # Apply the deployment manifest
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -43,10 +41,15 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+    waitFor: ['kubectl-context']
 
   # Validate service manifest
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '--dry-run=client', '-f', 'service.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+    waitFor: ['kubectl-context']
 
   # Apply the service manifest
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -54,6 +57,7 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+    waitFor: ['kubectl-context']
 
   # Update deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -65,6 +69,7 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
+    waitFor: ['kubectl-context']
 
 images:
   - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
