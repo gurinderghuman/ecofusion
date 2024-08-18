@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ecofusion-website
-        image: gcr.io/project-ecofusion/my-website:v1  # This will be updated by Cloud Build
+        image: gcr.io/$PROJECT_ID/ecofusion-website:$SHORT_SHA  # Use the short SHA hash
         ports:
         - containerPort: 3000
         resources:

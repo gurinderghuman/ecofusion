@@ -16,12 +16,11 @@ steps:
       - '> image_name.txt'  # Redirect output to a file
 
   # Update the image name in deployment.yaml
-  - name: 'gcr.io/cloud-builders/sed:v1'  # Replace with the correct tag
+  - name: 'gcr.io/cloud-builders/sed'
     args:
       - '-i'
       - 's|gcr.io/$PROJECT_ID/ecofusion-website:.*|gcr.io/$PROJECT_ID/ecofusion-website:\$(cat image_name.txt)|g'
       - 'deployment.yaml'
-  # ... other steps ...
 
   # Apply the updated deployment
   - name: 'gcr.io/cloud-builders/kubectl'
