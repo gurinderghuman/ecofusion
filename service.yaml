@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ecofusion-service
+  namespace: ecofusion
   annotations:
     networking.gke.io/load-balancer-ip: "34.170.52.5"
 spec:

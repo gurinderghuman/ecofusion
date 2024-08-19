@@ -1,62 +1,51 @@
 steps:
-  # Step 1: Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-${SHORT_SHA}'
-      - '.'
+  # ... (previous steps remain the same)
 
-  # Step 2: Push the Docker image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-${SHORT_SHA}'
-
-  # Step 3: Get GKE credentials to interact with the cluster
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'container'
-      - 'clusters'
-      - 'get-credentials'
-      - 'autopilot-cluster-1'
-      - '--region'
-      - 'us-central1'
-      - '--project'
-      - 'portfolio-ghuman'
-      - '--quiet'
-
-  # Step 4: Update the Kubernetes deployment to use the new Docker image
+  # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
-    env:
-      - 'KUBECTL_VERSION=1.30'
     args:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-deployment'
-      - 'ecofusion-app=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-${SHORT_SHA}'
-
-  # Step 5: Rollout restart to ensure the new image is deployed
-  - name: 'gcr.io/cloud-builders/kubectl'
+      - 'ecofusion-app=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
+      - '-n'
+      - 'ecofusion'
     env:
       - 'KUBECTL_VERSION=1.30'
-    args:
-      - 'rollout'
-      - 'restart'
-      - 'deployment/ecofusion-deployment'
 
-  # Step 6: Wait for the rollout to complete, ensuring all pods are updated
+  # Apply any changes to the deployment
   - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'deployment.yaml']
     env:
       - 'KUBECTL_VERSION=1.30'
+
+  # Apply any changes to the service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'service.yaml']
+    env:
+      - 'KUBECTL_VERSION=1.30'
+
+  # Force redeployment to clear pod-level cache
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
-      - 'rollout'
-      - 'status'
-      - 'deployment/ecofusion-deployment'
-      - '--timeout=600s'
+    - 'rollout'
+    - 'restart'
+    - 'deployment/ecofusion-deployment'
+    - '-n'
+    - 'ecofusion'
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
-images:
-  - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-${SHORT_SHA}'
+  # Wait for rollout to complete
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+    - 'rollout'
+    - 'status'
+    - 'deployment/ecofusion-deployment'
+    - '-n'
+    - 'ecofusion'
+    - '--timeout=600s'
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+  # ... (rest of the file remains the same)
