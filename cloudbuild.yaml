@@ -20,16 +20,11 @@ steps:
       - 'portfolio-ghuman'
       - '--quiet'
 
-  # Debugging step: Print the current Kubernetes context
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['config', 'current-context']
-
-  # Debugging step: Get the status of the deployment before applying changes
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['get', 'deployment', 'ecofusion-deployment', '--namespace', 'default', '-o', 'yaml']
-
+  # Specify kubectl version via KUBECTL_VERSION
   # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
+    env:
+      - 'KUBECTL_VERSION=1.30'
     args:
       - 'set'
       - 'image'
@@ -38,6 +33,8 @@ steps:
 
   # Rollout restart to ensure new pods are created with the updated image
   - name: 'gcr.io/cloud-builders/kubectl'
+    env:
+      - 'KUBECTL_VERSION=1.30'
     args:
       - 'rollout'
       - 'restart'
@@ -45,6 +42,8 @@ steps:
 
   # Wait for rollout to complete
   - name: 'gcr.io/cloud-builders/kubectl'
+    env:
+      - 'KUBECTL_VERSION=1.30'
     args:
       - 'rollout'
       - 'status'
