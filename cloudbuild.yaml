@@ -43,14 +43,6 @@ steps:
       - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
     waitFor: ['kubectl-context']
 
-  # Validate service manifest
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '--dry-run=client', '-f', 'service.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
-
   # Apply the service manifest
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
