@@ -18,7 +18,15 @@ steps:
       - 'us-central1'
       - '--project'
       - 'portfolio-ghuman'
-      - '--quiet'  # Directly include quiet mode here
+      - '--quiet'
+
+  # Debugging step: Print the current Kubernetes context
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['config', 'current-context']
+
+  # Debugging step: Get the status of the deployment before applying changes
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['get', 'deployment', 'ecofusion-deployment', '--namespace', 'default', '-o', 'yaml']
 
   # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
