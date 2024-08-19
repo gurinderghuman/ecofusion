@@ -1,19 +1,10 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-<<<<<<< HEAD
     args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA', '.']
-=======
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
-      - '.'
->>>>>>> ffa462a8f16e50df6a016f0a152bc32babe37eaa
 
   # Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-<<<<<<< HEAD
     args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA']
 
   # Get GKE credentials
@@ -53,61 +44,6 @@ steps:
   # Apply any changes to the service
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
-=======
-    args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
-
-  # Set up kubectl with the correct context
-  - name: 'gcr.io/cloud-builders/kubectl'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    args:
-    - 'config'
-    - 'view'
-    - '--raw'
-    - '--minify'
-    - '--flatten'
-    - '--merge'
-    id: 'kubectl-context'
-
-  # Validate deployment manifest
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '--dry-run=client', '-f', 'deployment.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
-
-  # Apply the deployment manifest
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'deployment.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
-
-  # Apply the service manifest
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'service.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
-
-  # Update deployment to use the new image
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-    - 'set'
-    - 'image'
-    - 'deployment/my-node-app'
-    - 'my-node-app=gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
->>>>>>> ffa462a8f16e50df6a016f0a152bc32babe37eaa
 
   # Update deployment with a unique label to force pod recreation
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -143,11 +79,7 @@ steps:
 
 # Images to be pushed to Artifact Registry
 images:
-<<<<<<< HEAD
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA'
-=======
-  - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
->>>>>>> ffa462a8f16e50df6a016f0a152bc32babe37eaa
 
 options:
   logging: CLOUD_LOGGING_ONLY
