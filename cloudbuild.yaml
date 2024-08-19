@@ -14,8 +14,8 @@ steps:
       - 'clusters'
       - 'get-credentials'
       - 'autopilot-cluster-1'
-      - '--zone'
-      - 'us-central1-a'
+      - '--region'
+      - 'us-central1'
       - '--project'
       - 'portfolio-ghuman'
 
