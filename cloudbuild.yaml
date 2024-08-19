@@ -1,14 +1,14 @@
 steps:
   # Build the Docker image
-  - name: 'gcrio/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA', '.']
 
   # Push the image to Artifact Registry
-  - name: 'gcrio/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA']
 
   # Get GKE credentials
-  - name: 'gcrio/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'container'
       - 'clusters'
@@ -17,33 +17,33 @@ steps:
       - '--zone'
       - 'us-central1-a'
       - '--project'
-      - '$PROJECT_ID'
+      - 'portfolio-ghuman'
 
   # Update the deployment to use the new image
-  - name: 'gcrio/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-deployment'
-      - 'ecofusion-app=us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA'
+      - 'ecofusion-app=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
 
   # Apply any changes to the deployment
-  - name: 'gcrio/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
 
   # Apply any changes to the service
-  - name: 'gcrio/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
 
   # Force redeployment to clear pod-level cache
-  - name: 'gcrio/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
     - 'rollout'
     - 'restart'
     - 'deployment/ecofusion-deployment'
 
   # Wait for rollout to complete
-  - name: 'gcrio/cloud-builders/kubectl'
+  - name: 'gcr.io/cloud-builders/kubectl'
     args:
     - 'rollout'
     - 'status'
@@ -51,7 +51,7 @@ steps:
     - '--timeout=600s'
 
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
