@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-node-app
+  name: ecofusion-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: my-node-app
+      app: ecofusion-app
   template:
     metadata:
       labels:
-        app: my-node-app
+        app: ecofusion-app
     spec:
       containers:
-      - name: my-node-app
-        image: europe-west10-docker.pkg.dev/ghuman-portfolio/ecofusion-repo/ecofusion:v1.0.0
+      - name: ecofusion-app
+        image: europe-west10-docker.pkg.dev/ghuman-portfolio/ecofusion-repo/ecofusion:v1
         ports:
         - containerPort: 3000
         resources:
