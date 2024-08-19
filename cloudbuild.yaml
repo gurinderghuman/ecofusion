@@ -1,14 +1,14 @@
 steps:
   # Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA', '.']
+  - name: 'gcrio/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA', '.']
 
   # Push the image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA']
+  - name: 'gcrio/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA']
 
   # Get GKE credentials
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcrio/cloud-builders/gcloud'
     args:
       - 'container'
       - 'clusters'
@@ -20,30 +20,30 @@ steps:
       - '$PROJECT_ID'
 
   # Update the deployment to use the new image
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcrio/cloud-builders/kubectl'
     args:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-deployment'
-      - 'ecofusion-app=us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA'
+      - 'ecofusion-app=us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA'
 
   # Apply any changes to the deployment
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcrio/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
 
   # Apply any changes to the service
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcrio/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
 
   # Force redeployment to clear pod-level cache
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcrio/cloud-builders/kubectl'
     args:
     - 'rollout'
     - 'restart'
     - 'deployment/ecofusion-deployment'
 
   # Wait for rollout to complete
-  - name: 'gcr.io/cloud-builders/kubectl'
+  - name: 'gcrio/cloud-builders/kubectl'
     args:
     - 'rollout'
     - 'status'
@@ -51,7 +51,7 @@ steps:
     - '--timeout=600s'
 
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/gcrio/ecofusion:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
