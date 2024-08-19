@@ -11,3 +11,6 @@ steps:
       - 'portfolio-ghuman'
     env:
       - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--internal-ip --quiet'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
