@@ -18,6 +18,8 @@ steps:
       - 'us-central1'
       - '--project'
       - 'portfolio-ghuman'
+    env:
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--quiet'
 
   # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
