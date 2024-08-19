@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "my-app-ip"
 spec:
   type: LoadBalancer
-  loadBalancerIP: 34.49.235.123  # Your specific static IP address
+  loadBalancerIP: 34.32.67.8  # Your specific static IP address
   ports:
     - port: 80
       targetPort: 3000  # Assuming your app listens on port 3000
