@@ -1,5 +1,25 @@
 steps:
-  # ... (previous steps remain the same)
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA', '.']
+
+  # Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA']
+
+  # Get GKE credentials
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'autopilot-cluster-1'
+      - '--region'
+      - 'us-central1'
+      - '--project'
+      - 'portfolio-ghuman'
+    env:
+      - 'CLOUDSDK_GET_CREDENTIALS_OPTS=--quiet'
 
   # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -48,4 +68,8 @@ steps:
     env:
       - 'KUBECTL_VERSION=1.30'
 
-  # ... (rest of the file remains the same)
+images:
+  - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
