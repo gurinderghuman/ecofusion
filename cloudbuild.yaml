@@ -1,70 +1,57 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
-      - '.'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA', '.']
 
-  # Push the image to Google Container Registry
+  # Push the image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA']
+
+  # Get GKE credentials
+  - name: 'gcr.io/cloud-builders/gcloud'
     args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'autopilot-cluster-1'
+      - '--zone'
+      - 'us-central1-a'
+      - '--project'
+      - '$PROJECT_ID'
 
-  # Set up kubectl with the correct context
+  # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
     args:
-    - 'config'
-    - 'view'
-    - '--raw'
-    - '--minify'
-    - '--flatten'
-    - '--merge'
-    id: 'kubectl-context'
+      - 'set'
+      - 'image'
+      - 'deployment/ecofusion-deployment'
+      - 'ecofusion-app=gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA'
 
-  # Validate deployment manifest
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '--dry-run=client', '-f', 'deployment.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
-
-  # Apply the deployment manifest
+  # Apply any changes to the deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
 
-  # Apply the service manifest
+  # Apply any changes to the service
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
 
-  # Update deployment to use the new image
+  # Force redeployment to clear pod-level cache
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
-    - 'set'
-    - 'image'
-    - 'deployment/my-node-app'
-    - 'my-node-app=gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=ecofusion-cluster'
-    waitFor: ['kubectl-context']
+    - 'rollout'
+    - 'restart'
+    - 'deployment/ecofusion-deployment'
+
+  # Wait for rollout to complete
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+    - 'rollout'
+    - 'status'
+    - 'deployment/ecofusion-deployment'
+    - '--timeout=600s'
 
 images:
-  - 'gcr.io/$PROJECT_ID/my-website:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
