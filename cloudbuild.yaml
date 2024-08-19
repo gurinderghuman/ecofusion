@@ -1,11 +1,11 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA', '.']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA', '.']
 
   # Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA']
 
   # Get GKE credentials
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -35,7 +35,7 @@ steps:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-deployment'
-      - 'ecofusion-app=us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA'
+      - 'ecofusion-app=us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA'
 
   # Apply any changes to the deployment
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -79,7 +79,7 @@ steps:
 
 # Images to be pushed to Artifact Registry
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/gcr.io/ecofusion:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
