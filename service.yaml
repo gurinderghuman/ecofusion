@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: ecofusion-service
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: "ecofusion-static-ip"
+    cloud.google.com/neg: '{"ingress": true}'  # For GKE Autopilot
 spec:
   type: LoadBalancer
-  loadBalancerIP: 34.32.67.8  # Your specific static IP address
   ports:
     - port: 80
       targetPort: 3000
