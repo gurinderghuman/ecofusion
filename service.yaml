@@ -2,10 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ecofusion-service
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "ecofusion-static-ip"
 spec:
-  selector:
-    app: ecofusion-app
+  type: LoadBalancer
+  loadBalancerIP: 34.32.67.8  # Your specific static IP address
   ports:
     - port: 80
       targetPort: 3000
-  type: LoadBalancer
+  selector:
+    app: ecofusion-app
