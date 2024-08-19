@@ -1,11 +1,11 @@
 steps:
   # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA', '.']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA', '.']
 
-  # Push the image to Container Registry
+  # Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA']
 
   # Get GKE credentials
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -19,13 +19,23 @@ steps:
       - '--project'
       - '$PROJECT_ID'
 
+  # Debug: Check current context and cluster info
+  - name: 'gcr.io/cloud-builders/kubectl'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
+
   # Update the deployment to use the new image
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-deployment'
-      - 'ecofusion-app=gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA'
+      - 'ecofusion-app=us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA'
 
   # Apply any changes to the deployment
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -34,6 +44,15 @@ steps:
   # Apply any changes to the service
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
+
+  # Update deployment with a unique label to force pod recreation
+  - name: 'gcr.io/cloud-builders/kubectl'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      kubectl patch deployment ecofusion-deployment -p \
+        "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"date\":\"`date +'%s'`\"}}}}}"
 
   # Force redeployment to clear pod-level cache
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -50,8 +69,17 @@ steps:
     - 'deployment/ecofusion-deployment'
     - '--timeout=600s'
 
+  # Verify deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+    - 'get'
+    - 'pods'
+    - '-l'
+    - 'app=ecofusion-app'
+
+# Images to be pushed to Artifact Registry
 images:
-  - 'gcr.io/$PROJECT_ID/ecofusion:$SHORT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/ecofusion-repo/ecofusion:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY
