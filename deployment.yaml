@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: ecofusion-app
-        image: us-central1-docker.pkg.dev/ghuman-portfolio/gcr-io/ecofusion:latest
+        image: us-central1-docker.pkg.dev/ghuman-portfolio/gcr.io/ecofusion:latest
         ports:
         - containerPort: 3000
         resources:
