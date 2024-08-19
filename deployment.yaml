@@ -17,7 +17,7 @@ spec:
       - name: ecofusion-app
         image: us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-${SHORT_SHA}
         ports:
-        - containerPort: 3000
+        - containerPort: 8080
         resources:
           requests:
             cpu: 100m
