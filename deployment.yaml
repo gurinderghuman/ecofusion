@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: my-node-app
-        image: gcr.io/project-ecofusion/my-website:v1
+        image: europe-west10-docker.pkg.dev/ghuman-portfolio/ecofusion-repo/ecofusion:v1.0.0
         ports:
         - containerPort: 3000
         resources:
