@@ -26,14 +26,20 @@ steps:
       - 'image'
       - 'deployment/ecofusion-deployment'
       - 'ecofusion-app=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
   # Apply any changes to the deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'deployment.yaml']
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
   # Apply any changes to the service
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'service.yaml']
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
   # Force redeployment to clear pod-level cache
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -41,6 +47,8 @@ steps:
     - 'rollout'
     - 'restart'
     - 'deployment/ecofusion-deployment'
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
   # Wait for rollout to complete
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -49,6 +57,8 @@ steps:
     - 'status'
     - 'deployment/ecofusion-deployment'
     - '--timeout=600s'
+    env:
+      - 'KUBECTL_VERSION=1.30'
 
 images:
   - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
