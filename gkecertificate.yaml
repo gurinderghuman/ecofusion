@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: ecofusion-managed-cert
+  namespace: ecofusion
+spec:
+  domains:
+    - ghuamanportfolio.com  # Replace with your actual domain
