@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecofusion-deployment
+  name: ecofusion-app-${SHORT_SHA}
   namespace: ecofusion
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: ecofusion-deployment
+      app: ecofusion-app
   template:
     metadata:
       labels:
-        app: ecofusion-deployment
+        app: ecofusion-app
+        version: ${SHORT_SHA}
     spec:
       containers:
-      - name: ecofusion-deployment
-        image: us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA
+      - name: ecofusion-app
+        image: us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-${SHORT_SHA}
         ports:
         - containerPort: 8080
         resources:
