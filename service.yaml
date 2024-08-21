@@ -5,7 +5,7 @@ metadata:
   namespace: ecofusion
 spec:
   selector:
-    app: ecofusion-app
+    app: ecofusion-deployment
   type: NodePort
   ports:
     - port: 80
