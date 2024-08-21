@@ -8,7 +8,6 @@ const Navbar = () => (
       <div className="flex space-x-4">
         <Link href="/" className="text-white">Home</Link>
         <Link href="/projects" className="text-white">Projects</Link>
-        <Link href="/blog" className="text-white">Blog</Link>
         <Link href="/about" className="text-white">About</Link>
         <Link href="/contact" className="text-white">Contact</Link>
         <button  className="text-white text-2xl font-bold">Submit </button>
