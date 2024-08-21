@@ -21,20 +21,6 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
 
-  # Apply the ManagedCertificate
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'managed-certificate.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
-
-  # Apply the FrontendConfig
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'frontend-config.yaml']
-    env:
-      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
-
   # Apply the Ingress
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'ingress.yaml']
@@ -48,7 +34,7 @@ steps:
       - 'set'
       - 'image'
       - 'deployment/ecofusion-deployment'
-      - 'ecofusion-app=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
+      - 'ecofusion-deployment=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
       - '-n'
       - 'ecofusion'
     env:
