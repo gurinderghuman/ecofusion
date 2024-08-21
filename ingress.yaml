@@ -5,7 +5,7 @@ metadata:
   namespace: ecofusion
   annotations:
     kubernetes.io/ingress.class: "gce"
-    kubernetes.io/ingress.global-static-ip-name: "34.72.220.198"
+    kubernetes.io/ingress.regional-static-ip-name: "34.72.220.198"
     networking.gke.io/managed-certificates: "ecofusion-managed-cert"
     kubernetes.io/ingress.allow-http: "false"
     networking.gke.io/v1beta1.FrontendConfig: "ecofusion-frontend-config"
