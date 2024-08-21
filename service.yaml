@@ -3,14 +3,10 @@ kind: Service
 metadata:
   name: ecofusion-service
   namespace: ecofusion
-  annotations:
-    networking.gke.io/load-balancer-ip: "34.170.52.5"
 spec:
   selector:
     app: ecofusion-app
+  type: NodePort
   ports:
     - port: 80
       targetPort: 8080
-      protocol: TCP      
-  type: LoadBalancer
-  loadBalancerIP: "34.170.52.5"
