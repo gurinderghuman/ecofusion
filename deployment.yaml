@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ecofusion-app
-        image: us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-9efec39
+        image: us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-main
         ports:
         - containerPort: 3000
         resources:
@@ -23,5 +23,5 @@ spec:
             cpu: 250m
             memory: 512Mi
           limits:
-            cpu: 500m
-            memory: 1Gi
+            cpu: 250m
+            memory: 512Mi

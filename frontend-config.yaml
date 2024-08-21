@@ -1,5 +1,5 @@
-apiVersion: networking.gke.io/v1beta1
-kind: FrontendConfig
+apiVersion: apps/v1/v1
+kind: Deployment
 metadata:
   name: ecofusion-frontend-config
   namespace: ecofusion
