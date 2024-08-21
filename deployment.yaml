@@ -1,30 +1,27 @@
-steps:
-  # Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA', '-t', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-main', '.']
-
-  # Push the images to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA']
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-main']
-
-  # Update the deployment to use the new image
-  - name: 'gcr.io/cloud-builders/kubectl'
-    args:
-    - 'set'
-    - 'image'
-    - 'deployment/ecofusion-app'
-    - 'ecofusion-app=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-main'
-    - '-n'
-    - 'ecofusion'
-    env:
-    - 'CLOUDSDK_COMPUTE_REGION=us-central1'
-    - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
-
-images:
-  - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'
-  - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-main'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecofusion-app
+  namespace: ecofusion
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ecofusion-app
+  template:
+    metadata:
+      labels:
+        app: ecofusion-app
+    spec:
+      containers:
+      - name: ecofusion-app
+        image: us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-main
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 250m
+            memory: 512Mi
