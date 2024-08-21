@@ -7,7 +7,7 @@ const Navbar = () => (
       <div className="text-white text-2xl font-bold">EcoFusion</div>
       <div className="flex space-x-4">
         <Link href="/" className="text-white">Home</Link>
-        <Link href="/products" className="text-white-500">Projects</Link>
+        <Link href="/products" className="text-white">Projects</Link>
         <Link href="/blog" className="text-white">Blog</Link>
         <Link href="/about" className="text-white">About</Link>
         <Link href="/contact" className="text-white">Contact</Link>
