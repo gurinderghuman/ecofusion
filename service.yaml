@@ -5,8 +5,8 @@ metadata:
   namespace: ecofusion
 spec:
   selector:
-    app: ecofusion-deployment
-  type: NodePort
+    app: ecofusion-app
+  type: LoadBalancer  # Change to LoadBalancer
   ports:
     - port: 80
       targetPort: 8080
