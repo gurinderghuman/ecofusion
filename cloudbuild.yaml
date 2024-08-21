@@ -21,6 +21,20 @@ steps:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
 
+  # Apply the ManagedCertificate
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'managed-certificate.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
+
+  # Apply the FrontendConfig
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'frontend-config.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
+
   # Apply the Ingress
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'ingress.yaml']

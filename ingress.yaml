@@ -6,15 +6,13 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "34.72.220.198"
-    kubernetes.io/ingress.allow-http: "true"
+    networking.gke.io/managed-certificates: "ecofusion-managed-cert"
+    kubernetes.io/ingress.allow-http: "false"
+    networking.gke.io/v1beta1.FrontendConfig: "ecofusion-frontend-config"
 spec:
-  defaultBackend:
-    service:
-      name: ecofusion-service
-      port: 
-        number: 80
   rules:
-    - http:
+    - host: ghuamanportfolio.com
+      http:
         paths:
           - path: /
             pathType: Prefix

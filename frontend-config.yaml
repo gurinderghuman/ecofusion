@@ -4,7 +4,6 @@ metadata:
   name: ecofusion-frontend-config
   namespace: ecofusion
 spec:
-  sslPolicy: ecofusion-ssl-policy
   redirectToHttps:
     enabled: true
     responseCodeName: MOVED_PERMANENTLY_DEFAULT
