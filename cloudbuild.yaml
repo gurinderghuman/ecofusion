@@ -7,16 +7,20 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA']
 
-  # Deploy the new version
-  - name: 'gcr.io/cloud-builders/kubectl'
+  # Update the deployment file with the new image
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      - 'apply'
-      - '-f'
-      - 'deployment.yaml'
+    - '-c'
+    - |
+      sed -i 's|${SHORT_SHA}|'$SHORT_SHA'|g' deployment.yaml
+
+  # Apply the updated deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'deployment.yaml']
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
-      - 'SHORT_SHA=$SHORT_SHA'
 
   # Apply the Service
   - name: 'gcr.io/cloud-builders/kubectl'
@@ -31,14 +35,6 @@ steps:
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1'
-
-  # Clean up old deployments
-  - name: 'gcr.io/cloud-builders/kubectl'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        kubectl get deployments -n ecofusion -o json | jq -r '.items[] | select(.metadata.name | startswith("ecofusion-app-")) | .metadata.name' | sort -r | tail -n +4 | xargs -r kubectl delete deployment -n ecofusion
 
 images:
   - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-$SHORT_SHA'

@@ -1,8 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecofusion-app-${SHORT_SHA}
+  name: ecofusion-app
   namespace: ecofusion
+  annotations:
+    sha: ${SHORT_SHA}
 spec:
   replicas: 2
   selector:
@@ -12,7 +14,8 @@ spec:
     metadata:
       labels:
         app: ecofusion-app
-        version: ${SHORT_SHA}
+      annotations:
+        sha: ${SHORT_SHA}
     spec:
       containers:
       - name: ecofusion-app
