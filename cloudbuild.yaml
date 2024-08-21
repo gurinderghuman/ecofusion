@@ -13,7 +13,7 @@ steps:
     args:
     - '-c'
     - |
-      sed -i 's|${SHORT_SHA}|'$SHORT_SHA'|g' deployment.yaml
+      sed -i 's|us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-COMMIT_SHA|us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:v1-'$SHORT_SHA'|g' deployment.yaml
 
   # Apply the updated deployment
   - name: 'gcr.io/cloud-builders/kubectl'
