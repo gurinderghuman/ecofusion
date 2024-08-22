@@ -13,7 +13,7 @@ steps:
     args:
     - '-c'
     - |
-      sed -i 's|COMMIT_SHA|'$SHORT_SHA'|g' kubernetes/deployment.yaml
+      sed -i 's|COMMIT_SHA|'$SHORT_SHA'|g' deployment.yaml
 
   # Deploy container image to GKE
   - name: 'gcr.io/cloud-builders/gke-deploy'
