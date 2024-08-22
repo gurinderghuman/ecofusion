@@ -9,7 +9,7 @@ metadata:
     kubernetes.io/ingress.class: "gce"
 spec:
   rules:
-  - host: ghuamanportfolio.com
+  - host: ghumanportfolio.com
     http:
       paths:
       - path: /
