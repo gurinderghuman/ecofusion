@@ -1,9 +1,0 @@
-apiVersion: apps/v1/v1
-kind: Deployment
-metadata:
-  name: ecofusion-frontend-config
-  namespace: ecofusion
-spec:
-  redirectToHttps:
-    enabled: true
-    responseCodeName: MOVED_PERMANENTLY_DEFAULT
