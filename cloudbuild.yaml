@@ -1,31 +1,28 @@
 steps:
-  # Build the container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:$SHORT_SHA', '.']
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/ecofusion:$COMMIT_SHA', '.']
 
-  # Push the container image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:$SHORT_SHA']
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/ecofusion:$COMMIT_SHA']
 
-  # Update the deployment file
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      sed -i 's|COMMIT_SHA|'$SHORT_SHA'|g' kubernetes/deployment.yaml
+# Set up kustomize
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['kustomize', 'edit', 'set', 'image', 'gcr.io/$PROJECT_ID/ecofusion=gcr.io/$PROJECT_ID/ecofusion:$COMMIT_SHA']
 
-  # Deploy container image to GKE
-  - name: 'gcr.io/cloud-builders/gke-deploy'
-    args:
-    - run
-    - --filename=kubernetes/
-    - --image=us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:$SHORT_SHA
-    - --location=us-central1-c
-    - --cluster=ecofusion-cluster
+# Deploy container image to GKE
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  args:
+  - run
+  - --filename=.
+  - --image=gcr.io/$PROJECT_ID/ecofusion:$COMMIT_SHA
+  - --location=${_CLOUDSDK_COMPUTE_ZONE}
+  - --cluster=${_CLOUDSDK_CONTAINER_CLUSTER}
 
 images:
-  - 'us-central1-docker.pkg.dev/portfolio-ghuman/ecofusion-repo/ecofusion:$SHORT_SHA'
+- 'gcr.io/$PROJECT_ID/ecofusion:$COMMIT_SHA'
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+substitutions:
+  _CLOUDSDK_COMPUTE_ZONE: us-central1-c
+  _CLOUDSDK_CONTAINER_CLUSTER: your-cluster-name
